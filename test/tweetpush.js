@@ -1,4 +1,4 @@
-var publisher = require ('./mqttclient.js')
+var publisher = require ('./../protocols/mqtt/client.js').connect("http://localhost", "tweetpush")
 var Twitter = require('node-tweet-stream')
 
 t = new Twitter({
@@ -17,7 +17,11 @@ t.on('tweet', function (tweet) {
     if (tweet["text"].toLowerCase().indexOf("iot") > -1)
       subject = "iot"
   }
-  publisher.publish(subject, tweet["text"] + ":" + tweet["user"]["location"])
+  data = {
+    "text": tweet["text"],
+    "location": tweet["user"]["location"]
+  }
+  publisher.publish(subject, JSON.stringify(data))
 })
 
 t.on('error', function (err) {
